@@ -1,0 +1,43 @@
+env: prod
+
+services:
+  gateway_port: 8080
+  auth_grpc_port: 50051
+  player_grpc_port: 50052
+  economy_grpc_port: 50053
+  inventory_grpc_port: 50054
+  trading_grpc_port: 50055
+  world_grpc_port: 50056
+  world_ws_port: 8081
+  npc_grpc_port: 50057
+
+postgres:
+  host: postgres
+  port: 5432
+  user: postgres
+  password: postgrespassword
+  dbname: game_db
+  sslmode: disable
+
+cassandra:
+  hosts:
+    - cassandra
+  port: 9042
+  keyspace: game_keyspace
+  user: ""
+  password: ""
+
+redis:
+  host: redis
+  port: 6379
+  password: ""
+  db: 0
+
+kafka:
+  brokers:
+    - kafka:9092
+  group_id: game-backend-group
+
+jwt:
+  secret: prod-secret-key-must-be-set-via-env
+  access_expiry_hours: 24

@@ -1,0 +1,19 @@
+
+> template-angular@1.1.0 dev
+> node log dev & ng serve
+
+Component HMR has been enabled, see https://angular.dev/hmr for more info.
+❯ Building...
+✔ Building...
+Initial chunk files | Names         |  Raw size
+main.js             | main          | 124.18 kB | 
+polyfills.js        | polyfills     |  89.77 kB | 
+styles.css          | styles        |   2.06 kB | 
+
+                    | Initial total | 216.01 kB
+
+Application bundle generation complete. [1.950 seconds]
+
+Watch mode enabled. Watching for file changes...
+NOTE: Raw file sizes do not reflect development server per-request transformations.
+  ➜  Local:   http://localhost:4200/

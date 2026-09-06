@@ -1,0 +1,96 @@
+syntax = "proto3";
+
+package inventory;
+
+option go_package = "github.com/xrekson/game-backend/proto/inventory;inventorypb";
+
+enum ItemType {
+  WEAPON = 0;
+  ARMOUR = 1;
+  ARMAMENT = 2;
+}
+
+message Item {
+  string id = 1;
+  string template_id = 2;
+  string player_id = 3;
+  string name = 4;
+  ItemType type = 5;
+  double attack = 6;
+  double defense = 7;
+  string rarity = 8;
+  bool is_equipped = 9;
+  double price = 10;
+}
+
+message ItemTemplate {
+  string template_id = 1;
+  string name = 2;
+  ItemType type = 3;
+  double base_attack = 4;
+  double base_defense = 5;
+  string rarity = 6;
+  double base_price = 7;
+}
+
+message GetInventoryRequest {
+  string player_id = 1;
+}
+
+message GetInventoryResponse {
+  repeated Item items = 1;
+}
+
+message EquipItemRequest {
+  string player_id = 1;
+  string item_id = 2;
+}
+
+message EquipItemResponse {
+  bool success = 1;
+  Item item = 2;
+}
+
+message UnequipItemRequest {
+  string player_id = 1;
+  string item_id = 2;
+}
+
+message UnequipItemResponse {
+  bool success = 1;
+  Item item = 2;
+}
+
+message AddItemRequest {
+  string player_id = 1;
+  string template_id = 2;
+}
+
+message AddItemResponse {
+  bool success = 1;
+  Item item = 2;
+}
+
+message RemoveItemRequest {
+  string player_id = 1;
+  string item_id = 2;
+}
+
+message RemoveItemResponse {
+  bool success = 1;
+}
+
+message GetItemTemplatesRequest {}
+
+message GetItemTemplatesResponse {
+  repeated ItemTemplate templates = 1;
+}
+
+service InventoryService {
+  rpc GetInventory (GetInventoryRequest) returns (GetInventoryResponse);
+  rpc EquipItem (EquipItemRequest) returns (EquipItemResponse);
+  rpc UnequipItem (UnequipItemRequest) returns (UnequipItemResponse);
+  rpc AddItem (AddItemRequest) returns (AddItemResponse);
+  rpc RemoveItem (RemoveItemRequest) returns (RemoveItemResponse);
+  rpc GetItemTemplates (GetItemTemplatesRequest) returns (GetItemTemplatesResponse);
+}

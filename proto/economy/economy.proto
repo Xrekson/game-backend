@@ -1,0 +1,98 @@
+syntax = "proto3";
+
+package economy;
+
+option go_package = "github.com/xrekson/game-backend/proto/economy;economypb";
+
+service EconomyService {
+  rpc GetBalance (GetBalanceRequest) returns (GetBalanceResponse);
+  rpc ClaimIncome (ClaimIncomeRequest) returns (ClaimIncomeResponse);
+  rpc GetUpgrades (GetUpgradesRequest) returns (GetUpgradesResponse);
+  rpc PurchaseUpgrade (PurchaseUpgradeRequest) returns (PurchaseUpgradeResponse);
+  rpc Prestige (PrestigeRequest) returns (PrestigeResponse);
+  rpc DeductCurrency (DeductCurrencyRequest) returns (DeductCurrencyResponse);
+  rpc AddCurrency (AddCurrencyRequest) returns (AddCurrencyResponse);
+}
+
+message UpgradeItem {
+  string id = 1;
+  string name = 2;
+  int32 level = 3;
+  double base_cost = 4;
+  double current_cost = 5;
+  double income_bonus_per_sec = 6;
+  string description = 7;
+}
+
+message GetBalanceRequest {
+  string player_id = 1;
+}
+
+message GetBalanceResponse {
+  string player_id = 1;
+  double balance = 2;
+  double income_per_sec = 3;
+  int32 prestige_level = 4;
+  double prestige_multiplier = 5;
+  int64 last_claim_time = 6;
+}
+
+message ClaimIncomeRequest {
+  string player_id = 1;
+}
+
+message ClaimIncomeResponse {
+  string player_id = 1;
+  double claimed_amount = 2;
+  double new_balance = 3;
+}
+
+message GetUpgradesRequest {
+  string player_id = 1;
+}
+
+message GetUpgradesResponse {
+  repeated UpgradeItem upgrades = 1;
+}
+
+message PurchaseUpgradeRequest {
+  string player_id = 1;
+  string upgrade_id = 2;
+}
+
+message PurchaseUpgradeResponse {
+  bool success = 1;
+  double new_balance = 2;
+  double new_income_per_sec = 3;
+  UpgradeItem upgrade = 4;
+}
+
+message PrestigeRequest {
+  string player_id = 1;
+}
+
+message PrestigeResponse {
+  bool success = 1;
+  int32 new_prestige_level = 2;
+  double new_prestige_multiplier = 3;
+}
+
+message DeductCurrencyRequest {
+  string player_id = 1;
+  double amount = 2;
+}
+
+message DeductCurrencyResponse {
+  bool success = 1;
+  double new_balance = 2;
+}
+
+message AddCurrencyRequest {
+  string player_id = 1;
+  double amount = 2;
+}
+
+message AddCurrencyResponse {
+  bool success = 1;
+  double new_balance = 2;
+}

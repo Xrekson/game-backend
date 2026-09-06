@@ -1,0 +1,29 @@
+{"time":"2026-09-06T21:48:45.982731944+05:30","level":"INFO","msg":"Connected to Redis successfully at %s","!BADKEY":"192.168.0.107:6379"}
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] GET    /health                   --> github.com/xrekson/game-backend/gateway/router.SetupRouter.func1 (4 handlers)
+[GIN-debug] POST   /api/v1/auth/register     --> github.com/xrekson/game-backend/gateway/router.SetupRouter.func2 (4 handlers)
+[GIN-debug] POST   /api/v1/auth/login        --> github.com/xrekson/game-backend/gateway/router.SetupRouter.func3 (4 handlers)
+[GIN-debug] GET    /api/v1/player/profile    --> github.com/xrekson/game-backend/gateway/router.SetupRouter.func4 (5 handlers)
+[GIN-debug] GET    /api/v1/economy/balance   --> github.com/xrekson/game-backend/gateway/router.SetupRouter.func5 (5 handlers)
+[GIN-debug] POST   /api/v1/economy/claim     --> github.com/xrekson/game-backend/gateway/router.SetupRouter.func6 (5 handlers)
+[GIN-debug] GET    /api/v1/economy/upgrades  --> github.com/xrekson/game-backend/gateway/router.SetupRouter.func7 (5 handlers)
+[GIN-debug] POST   /api/v1/economy/upgrade   --> github.com/xrekson/game-backend/gateway/router.SetupRouter.func8 (5 handlers)
+[GIN-debug] POST   /api/v1/economy/prestige  --> github.com/xrekson/game-backend/gateway/router.SetupRouter.func9 (5 handlers)
+[GIN-debug] GET    /api/v1/inventory/items   --> github.com/xrekson/game-backend/gateway/router.SetupRouter.func10 (5 handlers)
+[GIN-debug] POST   /api/v1/inventory/equip   --> github.com/xrekson/game-backend/gateway/router.SetupRouter.func11 (5 handlers)
+[GIN-debug] GET    /api/v1/inventory/templates --> github.com/xrekson/game-backend/gateway/router.SetupRouter.func12 (5 handlers)
+[GIN-debug] GET    /api/v1/trading/listings  --> github.com/xrekson/game-backend/gateway/router.SetupRouter.func13 (5 handlers)
+[GIN-debug] POST   /api/v1/trading/create    --> github.com/xrekson/game-backend/gateway/router.SetupRouter.func14 (5 handlers)
+[GIN-debug] POST   /api/v1/trading/buy       --> github.com/xrekson/game-backend/gateway/router.SetupRouter.func15 (5 handlers)
+[GIN-debug] GET    /api/v1/npc/list          --> github.com/xrekson/game-backend/gateway/router.SetupRouter.func16 (5 handlers)
+[GIN-debug] POST   /api/v1/npc/buy           --> github.com/xrekson/game-backend/gateway/router.SetupRouter.func17 (5 handlers)
+[GIN-debug] GET    /api/v1/world/map         --> github.com/xrekson/game-backend/gateway/router.SetupRouter.func18 (5 handlers)
+[GIN-debug] POST   /api/v1/world/move        --> github.com/xrekson/game-backend/gateway/router.SetupRouter.func19 (5 handlers)
+[GIN-debug] POST   /api/v1/world/combat      --> github.com/xrekson/game-backend/gateway/router.SetupRouter.func20 (5 handlers)
+{"time":"2026-09-06T21:48:45.983175729+05:30","level":"INFO","msg":"API Gateway running on port %d","!BADKEY":8080}
+[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
+Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
+[GIN-debug] Listening and serving HTTP on :8080

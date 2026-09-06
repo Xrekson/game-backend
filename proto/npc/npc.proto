@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package npc;
+
+option go_package = "github.com/xrekson/game-backend/proto/npc;npcpb";
+
+service NPCService {
+  rpc GetNPCList (GetNPCListRequest) returns (GetNPCListResponse);
+  rpc BuyFromNPC (BuyFromNPCRequest) returns (BuyFromNPCResponse);
+}
+
+message NPC {
+  string id = 1;
+  string name = 2;
+  string map_id = 3;
+  string dialogue = 4;
+  repeated string shop_item_template_ids = 5;
+}
+
+message GetNPCListRequest {
+  string map_id = 1;
+}
+
+message GetNPCListResponse {
+  repeated NPC npcs = 1;
+}
+
+message BuyFromNPCRequest {
+  string player_id = 1;
+  string npc_id = 2;
+  string item_template_id = 3;
+}
+
+message BuyFromNPCResponse {
+  bool success = 1;
+  string item_id = 2;
+  double price_paid = 3;
+  double new_balance = 4;
+}

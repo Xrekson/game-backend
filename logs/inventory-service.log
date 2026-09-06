@@ -1,0 +1,3 @@
+{"time":"2026-09-06T21:48:45.873144482+05:30","level":"INFO","msg":"Connected to PostgreSQL successfully at %s:%d","localhost":5432}
+{"time":"2026-09-06T21:48:45.913612791+05:30","level":"INFO","msg":"Connected to Cassandra successfully at %v:%d (keyspace: %s)","!BADKEY":["localhost"],"!BADKEY":9042,"!BADKEY":"game_keyspace"}
+{"time":"2026-09-06T21:48:45.929208157+05:30","level":"INFO","msg":"Inventory Service gRPC server running on port %d","!BADKEY":50054}

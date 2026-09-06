@@ -1,0 +1,18 @@
+CREATE TABLE IF NOT EXISTS player_balances (
+    player_id VARCHAR(36) PRIMARY KEY,
+    balance NUMERIC(20, 4) DEFAULT 10.0000,
+    base_income_per_sec NUMERIC(10, 4) DEFAULT 1.0000,
+    prestige_level INT DEFAULT 0,
+    prestige_multiplier NUMERIC(10, 4) DEFAULT 1.0000,
+    last_claim_time TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS player_upgrades (
+    player_id VARCHAR(36) NOT NULL,
+    upgrade_id VARCHAR(50) NOT NULL,
+    level INT DEFAULT 0,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (player_id, upgrade_id)
+);

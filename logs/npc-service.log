@@ -1,0 +1,2 @@
+{"time":"2026-09-06T21:48:45.792127773+05:30","level":"INFO","msg":"Connected to Cassandra successfully at %v:%d (keyspace: %s)","!BADKEY":["localhost"],"!BADKEY":9042,"!BADKEY":"game_keyspace"}
+{"time":"2026-09-06T21:48:45.816236128+05:30","level":"INFO","msg":"NPC Service gRPC server running on port %d","!BADKEY":50057}

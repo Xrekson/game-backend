@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package trading;
+
+option go_package = "github.com/xrekson/game-backend/proto/trading;tradingpb";
+
+service TradingService {
+  rpc CreateListing (CreateListingRequest) returns (CreateListingResponse);
+  rpc GetListings (GetListingsRequest) returns (GetListingsResponse);
+  rpc BuyListing (BuyListingRequest) returns (BuyListingResponse);
+  rpc CancelListing (CancelListingRequest) returns (CancelListingResponse);
+}
+
+message TradeListing {
+  string id = 1;
+  string seller_id = 2;
+  string item_id = 3;
+  string item_name = 4;
+  double price = 5;
+  string status = 6;
+  int64 created_at = 7;
+}
+
+message CreateListingRequest {
+  string seller_id = 1;
+  string item_id = 2;
+  double price = 3;
+}
+
+message CreateListingResponse {
+  TradeListing listing = 1;
+}
+
+message GetListingsRequest {
+  string status = 1;
+}
+
+message GetListingsResponse {
+  repeated TradeListing listings = 1;
+}
+
+message BuyListingRequest {
+  string buyer_id = 1;
+  string listing_id = 2;
+}
+
+message BuyListingResponse {
+  bool success = 1;
+  TradeListing listing = 2;
+}
+
+message CancelListingRequest {
+  string seller_id = 1;
+  string listing_id = 2;
+}
+
+message CancelListingResponse {
+  bool success = 1;
+}
