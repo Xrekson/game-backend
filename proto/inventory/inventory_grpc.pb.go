@@ -19,12 +19,14 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	InventoryService_GetInventory_FullMethodName     = "/inventory.InventoryService/GetInventory"
-	InventoryService_EquipItem_FullMethodName        = "/inventory.InventoryService/EquipItem"
-	InventoryService_UnequipItem_FullMethodName      = "/inventory.InventoryService/UnequipItem"
-	InventoryService_AddItem_FullMethodName          = "/inventory.InventoryService/AddItem"
-	InventoryService_RemoveItem_FullMethodName       = "/inventory.InventoryService/RemoveItem"
-	InventoryService_GetItemTemplates_FullMethodName = "/inventory.InventoryService/GetItemTemplates"
+	InventoryService_GetInventory_FullMethodName       = "/inventory.InventoryService/GetInventory"
+	InventoryService_EquipItem_FullMethodName          = "/inventory.InventoryService/EquipItem"
+	InventoryService_UnequipItem_FullMethodName        = "/inventory.InventoryService/UnequipItem"
+	InventoryService_AddItem_FullMethodName            = "/inventory.InventoryService/AddItem"
+	InventoryService_RemoveItem_FullMethodName         = "/inventory.InventoryService/RemoveItem"
+	InventoryService_GetItemTemplates_FullMethodName   = "/inventory.InventoryService/GetItemTemplates"
+	InventoryService_CreateItemTemplate_FullMethodName = "/inventory.InventoryService/CreateItemTemplate"
+	InventoryService_UpdateItemTemplate_FullMethodName = "/inventory.InventoryService/UpdateItemTemplate"
 )
 
 // InventoryServiceClient is the client API for InventoryService service.
@@ -37,6 +39,8 @@ type InventoryServiceClient interface {
 	AddItem(ctx context.Context, in *AddItemRequest, opts ...grpc.CallOption) (*AddItemResponse, error)
 	RemoveItem(ctx context.Context, in *RemoveItemRequest, opts ...grpc.CallOption) (*RemoveItemResponse, error)
 	GetItemTemplates(ctx context.Context, in *GetItemTemplatesRequest, opts ...grpc.CallOption) (*GetItemTemplatesResponse, error)
+	CreateItemTemplate(ctx context.Context, in *CreateItemTemplateRequest, opts ...grpc.CallOption) (*CreateItemTemplateResponse, error)
+	UpdateItemTemplate(ctx context.Context, in *UpdateItemTemplateRequest, opts ...grpc.CallOption) (*UpdateItemTemplateResponse, error)
 }
 
 type inventoryServiceClient struct {
@@ -107,6 +111,26 @@ func (c *inventoryServiceClient) GetItemTemplates(ctx context.Context, in *GetIt
 	return out, nil
 }
 
+func (c *inventoryServiceClient) CreateItemTemplate(ctx context.Context, in *CreateItemTemplateRequest, opts ...grpc.CallOption) (*CreateItemTemplateResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateItemTemplateResponse)
+	err := c.cc.Invoke(ctx, InventoryService_CreateItemTemplate_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *inventoryServiceClient) UpdateItemTemplate(ctx context.Context, in *UpdateItemTemplateRequest, opts ...grpc.CallOption) (*UpdateItemTemplateResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateItemTemplateResponse)
+	err := c.cc.Invoke(ctx, InventoryService_UpdateItemTemplate_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // InventoryServiceServer is the server API for InventoryService service.
 // All implementations must embed UnimplementedInventoryServiceServer
 // for forward compatibility.
@@ -117,6 +141,8 @@ type InventoryServiceServer interface {
 	AddItem(context.Context, *AddItemRequest) (*AddItemResponse, error)
 	RemoveItem(context.Context, *RemoveItemRequest) (*RemoveItemResponse, error)
 	GetItemTemplates(context.Context, *GetItemTemplatesRequest) (*GetItemTemplatesResponse, error)
+	CreateItemTemplate(context.Context, *CreateItemTemplateRequest) (*CreateItemTemplateResponse, error)
+	UpdateItemTemplate(context.Context, *UpdateItemTemplateRequest) (*UpdateItemTemplateResponse, error)
 	mustEmbedUnimplementedInventoryServiceServer()
 }
 
@@ -144,6 +170,12 @@ func (UnimplementedInventoryServiceServer) RemoveItem(context.Context, *RemoveIt
 }
 func (UnimplementedInventoryServiceServer) GetItemTemplates(context.Context, *GetItemTemplatesRequest) (*GetItemTemplatesResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetItemTemplates not implemented")
+}
+func (UnimplementedInventoryServiceServer) CreateItemTemplate(context.Context, *CreateItemTemplateRequest) (*CreateItemTemplateResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateItemTemplate not implemented")
+}
+func (UnimplementedInventoryServiceServer) UpdateItemTemplate(context.Context, *UpdateItemTemplateRequest) (*UpdateItemTemplateResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpdateItemTemplate not implemented")
 }
 func (UnimplementedInventoryServiceServer) mustEmbedUnimplementedInventoryServiceServer() {}
 func (UnimplementedInventoryServiceServer) testEmbeddedByValue()                          {}
@@ -274,6 +306,42 @@ func _InventoryService_GetItemTemplates_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _InventoryService_CreateItemTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateItemTemplateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InventoryServiceServer).CreateItemTemplate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: InventoryService_CreateItemTemplate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InventoryServiceServer).CreateItemTemplate(ctx, req.(*CreateItemTemplateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _InventoryService_UpdateItemTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateItemTemplateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InventoryServiceServer).UpdateItemTemplate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: InventoryService_UpdateItemTemplate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InventoryServiceServer).UpdateItemTemplate(ctx, req.(*UpdateItemTemplateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // InventoryService_ServiceDesc is the grpc.ServiceDesc for InventoryService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -304,6 +372,14 @@ var InventoryService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetItemTemplates",
 			Handler:    _InventoryService_GetItemTemplates_Handler,
+		},
+		{
+			MethodName: "CreateItemTemplate",
+			Handler:    _InventoryService_CreateItemTemplate_Handler,
+		},
+		{
+			MethodName: "UpdateItemTemplate",
+			Handler:    _InventoryService_UpdateItemTemplate_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

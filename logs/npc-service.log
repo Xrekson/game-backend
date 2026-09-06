@@ -1,2 +1,3 @@
-{"time":"2026-09-06T21:48:45.792127773+05:30","level":"INFO","msg":"Connected to Cassandra successfully at %v:%d (keyspace: %s)","!BADKEY":["localhost"],"!BADKEY":9042,"!BADKEY":"game_keyspace"}
-{"time":"2026-09-06T21:48:45.816236128+05:30","level":"INFO","msg":"NPC Service gRPC server running on port %d","!BADKEY":50057}
+{"time":"2026-09-07T00:03:45.091622972+05:30","level":"WARN","msg":"Initial Cassandra connection failed: %v","!BADKEY":"gocql: unable to create session: unable to discover protocol version: read tcp [::1]:39404->[::1]:9042: read: connection reset by peer"}
+{"time":"2026-09-07T00:03:45.469699692+05:30","level":"WARN","msg":"Cassandra connection notice: %v","!BADKEY":"failed connecting to cassandra keyspace game_keyspace: gocql: unable to create session: unable to discover protocol version: read tcp 127.0.0.1:50904->127.0.0.1:9042: read: connection reset by peer"}
+{"time":"2026-09-07T00:03:45.470126537+05:30","level":"INFO","msg":"NPC Service gRPC server running on port %d","!BADKEY":50057}

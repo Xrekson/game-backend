@@ -194,6 +194,39 @@ func SetupRouter(jwtMgr *auth.JWTManager, redisClient *redis.Client, clients Cli
 		})
 	}
 
+	// Admin Endpoints
+	adminGroup := protected.Group("/admin")
+	adminGroup.Use(middleware.AdminMiddleware())
+	{
+		adminGroup.POST("/inventory/templates", func(c *gin.Context) {
+			var tmpl inventorypb.ItemTemplate
+			if err := c.ShouldBindJSON(&tmpl); err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				return
+			}
+			res, err := clients.Inventory.CreateItemTemplate(c.Request.Context(), &inventorypb.CreateItemTemplateRequest{Template: &tmpl})
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+			c.JSON(http.StatusOK, res)
+		})
+
+		adminGroup.PUT("/inventory/templates", func(c *gin.Context) {
+			var tmpl inventorypb.ItemTemplate
+			if err := c.ShouldBindJSON(&tmpl); err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				return
+			}
+			res, err := clients.Inventory.UpdateItemTemplate(c.Request.Context(), &inventorypb.UpdateItemTemplateRequest{Template: &tmpl})
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+			c.JSON(http.StatusOK, res)
+		})
+	}
+
 	// Trading
 	tradingGroup := protected.Group("/trading")
 	{

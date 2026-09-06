@@ -1,3 +1,3 @@
-{"time":"2026-09-06T21:48:45.871755117+05:30","level":"INFO","msg":"Connected to PostgreSQL successfully at %s:%d","localhost":5432}
-{"time":"2026-09-06T21:48:45.875115323+05:30","level":"INFO","msg":"Transactional Outbox Relay started with interval %v","!BADKEY":2000000000}
-{"time":"2026-09-06T21:48:45.875289315+05:30","level":"INFO","msg":"Trading Service gRPC server running on port %d","!BADKEY":50055}
+{"time":"2026-09-07T00:03:45.282095923+05:30","level":"INFO","msg":"Connected to PostgreSQL successfully at %s:%d","localhost":5432}
+{"time":"2026-09-07T00:03:45.282345836+05:30","level":"INFO","msg":"Transactional Outbox Relay started with interval %v","!BADKEY":2000000000}
+{"time":"2026-09-07T00:03:45.282628199+05:30","level":"INFO","msg":"Trading Service gRPC server running on port %d","!BADKEY":50055}

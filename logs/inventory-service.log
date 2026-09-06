@@ -1,3 +1,4 @@
-{"time":"2026-09-06T21:48:45.873144482+05:30","level":"INFO","msg":"Connected to PostgreSQL successfully at %s:%d","localhost":5432}
-{"time":"2026-09-06T21:48:45.913612791+05:30","level":"INFO","msg":"Connected to Cassandra successfully at %v:%d (keyspace: %s)","!BADKEY":["localhost"],"!BADKEY":9042,"!BADKEY":"game_keyspace"}
-{"time":"2026-09-06T21:48:45.929208157+05:30","level":"INFO","msg":"Inventory Service gRPC server running on port %d","!BADKEY":50054}
+{"time":"2026-09-07T00:03:45.339675609+05:30","level":"INFO","msg":"Connected to PostgreSQL successfully at %s:%d","localhost":5432}
+{"time":"2026-09-07T00:03:45.71413295+05:30","level":"WARN","msg":"Initial Cassandra connection failed: %v","!BADKEY":"gocql: unable to create session: unable to discover protocol version: read tcp 127.0.0.1:50928->127.0.0.1:9042: read: connection reset by peer"}
+{"time":"2026-09-07T00:03:46.08849704+05:30","level":"WARN","msg":"Cassandra connection notice: %v","!BADKEY":"failed connecting to cassandra keyspace game_keyspace: gocql: unable to create session: unable to discover protocol version: read tcp 127.0.0.1:50944->127.0.0.1:9042: read: connection reset by peer"}
+{"time":"2026-09-07T00:03:46.088795013+05:30","level":"INFO","msg":"Inventory Service gRPC server running on port %d","!BADKEY":50054}

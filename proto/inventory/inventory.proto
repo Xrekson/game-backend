@@ -10,6 +10,13 @@ enum ItemType {
   ARMAMENT = 2;
 }
 
+message ItemAttribute {
+  string key = 1;
+  string type = 2;             // "DAMAGE", "BUFF", "EXP_BONUS", "GOLD_BONUS", "SPECIAL"
+  string value = 3;            // e.g. "15", "1.2", "20%"
+  string calculation_expr = 4; // e.g. "base_atk * 1.25", "xp * 1.20"
+}
+
 message Item {
   string id = 1;
   string template_id = 2;
@@ -21,6 +28,8 @@ message Item {
   string rarity = 8;
   bool is_equipped = 9;
   double price = 10;
+  bool has_attributes = 11;
+  repeated ItemAttribute attributes = 12;
 }
 
 message ItemTemplate {
@@ -31,6 +40,8 @@ message ItemTemplate {
   double base_defense = 5;
   string rarity = 6;
   double base_price = 7;
+  bool has_attributes = 8;
+  repeated ItemAttribute attributes = 9;
 }
 
 message GetInventoryRequest {
@@ -86,6 +97,24 @@ message GetItemTemplatesResponse {
   repeated ItemTemplate templates = 1;
 }
 
+message CreateItemTemplateRequest {
+  ItemTemplate template = 1;
+}
+
+message CreateItemTemplateResponse {
+  bool success = 1;
+  ItemTemplate template = 2;
+}
+
+message UpdateItemTemplateRequest {
+  ItemTemplate template = 1;
+}
+
+message UpdateItemTemplateResponse {
+  bool success = 1;
+  ItemTemplate template = 2;
+}
+
 service InventoryService {
   rpc GetInventory (GetInventoryRequest) returns (GetInventoryResponse);
   rpc EquipItem (EquipItemRequest) returns (EquipItemResponse);
@@ -93,4 +122,6 @@ service InventoryService {
   rpc AddItem (AddItemRequest) returns (AddItemResponse);
   rpc RemoveItem (RemoveItemRequest) returns (RemoveItemResponse);
   rpc GetItemTemplates (GetItemTemplatesRequest) returns (GetItemTemplatesResponse);
+  rpc CreateItemTemplate (CreateItemTemplateRequest) returns (CreateItemTemplateResponse);
+  rpc UpdateItemTemplate (UpdateItemTemplateRequest) returns (UpdateItemTemplateResponse);
 }

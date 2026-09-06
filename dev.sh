@@ -13,7 +13,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BACKEND_DIR="$SCRIPT_DIR"
-FRONTEND_DIR="$(cd "$SCRIPT_DIR/../template-angular-main" 2>/dev/null && pwd || echo "")"
+FRONTEND_DIR="$(cd "$SCRIPT_DIR/../game-frontend" 2>/dev/null && pwd || echo "")"
 PID_FILE="$BACKEND_DIR/.dev_pids"
 LOG_DIR="$BACKEND_DIR/logs"
 

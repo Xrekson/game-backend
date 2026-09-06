@@ -9,7 +9,12 @@ CREATE TABLE IF NOT EXISTS player_inventory (
     rarity VARCHAR(20) DEFAULT 'Common',
     is_equipped BOOLEAN DEFAULT FALSE,
     price NUMERIC(15, 2) DEFAULT 0,
+    has_attributes BOOLEAN DEFAULT FALSE,
+    attributes JSONB DEFAULT '[]'::jsonb,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+ALTER TABLE player_inventory ADD COLUMN IF NOT EXISTS has_attributes BOOLEAN DEFAULT FALSE;
+ALTER TABLE player_inventory ADD COLUMN IF NOT EXISTS attributes JSONB DEFAULT '[]'::jsonb;
 
 CREATE INDEX IF NOT EXISTS idx_inventory_player ON player_inventory(player_id);

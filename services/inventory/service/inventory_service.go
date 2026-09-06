@@ -18,6 +18,8 @@ type InventoryService interface {
 	AddItem(ctx context.Context, playerID, templateID string) (*model.InventoryItem, error)
 	RemoveItem(ctx context.Context, playerID, itemID string) error
 	GetItemTemplates(ctx context.Context) ([]*model.ItemTemplate, error)
+	CreateItemTemplate(ctx context.Context, tmpl *model.ItemTemplate) (*model.ItemTemplate, error)
+	UpdateItemTemplate(ctx context.Context, tmpl *model.ItemTemplate) (*model.ItemTemplate, error)
 }
 
 type inventoryService struct {
@@ -86,17 +88,19 @@ func (s *inventoryService) AddItem(ctx context.Context, playerID, templateID str
 	}
 
 	item := &model.InventoryItem{
-		ID:         uuid.New().String(),
-		PlayerID:   playerID,
-		TemplateID: tmpl.TemplateID,
-		Name:       tmpl.Name,
-		Type:       tmpl.Type,
-		Attack:     tmpl.BaseAttack,
-		Defense:    tmpl.BaseDefense,
-		Rarity:     tmpl.Rarity,
-		IsEquipped: false,
-		Price:      tmpl.BasePrice,
-		CreatedAt:  time.Now(),
+		ID:            uuid.New().String(),
+		PlayerID:      playerID,
+		TemplateID:    tmpl.TemplateID,
+		Name:          tmpl.Name,
+		Type:          tmpl.Type,
+		Attack:        tmpl.BaseAttack,
+		Defense:       tmpl.BaseDefense,
+		Rarity:        tmpl.Rarity,
+		IsEquipped:    false,
+		Price:         tmpl.BasePrice,
+		HasAttributes: tmpl.HasAttributes,
+		Attributes:    tmpl.Attributes,
+		CreatedAt:     time.Now(),
 	}
 
 	if err := s.repo.AddItem(ctx, item); err != nil {
@@ -127,4 +131,24 @@ func (s *inventoryService) GetItemTemplates(ctx context.Context) ([]*model.ItemT
 		return nil, errors.Internal("failed to fetch templates", err)
 	}
 	return tmpls, nil
+}
+
+func (s *inventoryService) CreateItemTemplate(ctx context.Context, tmpl *model.ItemTemplate) (*model.ItemTemplate, error) {
+	if tmpl.TemplateID == "" {
+		tmpl.TemplateID = "tmpl_" + uuid.New().String()[:8]
+	}
+	if err := s.templateRepo.SaveTemplate(ctx, tmpl); err != nil {
+		return nil, errors.Internal("failed to save item template", err)
+	}
+	return tmpl, nil
+}
+
+func (s *inventoryService) UpdateItemTemplate(ctx context.Context, tmpl *model.ItemTemplate) (*model.ItemTemplate, error) {
+	if tmpl.TemplateID == "" {
+		return nil, errors.BadRequest("template_id is required", nil)
+	}
+	if err := s.templateRepo.UpdateTemplate(ctx, tmpl); err != nil {
+		return nil, errors.Internal("failed to update item template", err)
+	}
+	return tmpl, nil
 }

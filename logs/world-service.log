@@ -1,4 +1,5 @@
-{"time":"2026-09-06T21:48:45.91345531+05:30","level":"INFO","msg":"Connected to Cassandra successfully at %v:%d (keyspace: %s)","!BADKEY":["localhost"],"!BADKEY":9042,"!BADKEY":"game_keyspace"}
-{"time":"2026-09-06T21:48:45.982705734+05:30","level":"INFO","msg":"Connected to Redis successfully at %s","!BADKEY":"192.168.0.107:6379"}
-{"time":"2026-09-06T21:48:45.991458497+05:30","level":"INFO","msg":"World Service WebSocket server running on port %d","!BADKEY":8081}
-{"time":"2026-09-06T21:48:45.991548408+05:30","level":"INFO","msg":"World Service gRPC server running on port %d","!BADKEY":50056}
+{"time":"2026-09-07T00:03:45.253744945+05:30","level":"WARN","msg":"Initial Cassandra connection failed: %v","!BADKEY":"gocql: unable to create session: unable to discover protocol version: read tcp [::1]:39420->[::1]:9042: read: connection reset by peer"}
+{"time":"2026-09-07T00:03:45.628331917+05:30","level":"WARN","msg":"Cassandra connection notice: %v","!BADKEY":"failed connecting to cassandra keyspace game_keyspace: gocql: unable to create session: unable to discover protocol version: read tcp 127.0.0.1:50916->127.0.0.1:9042: read: connection reset by peer"}
+{"time":"2026-09-07T00:03:45.642331299+05:30","level":"INFO","msg":"Connected to Redis successfully at %s","!BADKEY":"192.168.0.107:6379"}
+{"time":"2026-09-07T00:03:45.642515201+05:30","level":"INFO","msg":"World Service WebSocket server running on port %d","!BADKEY":8081}
+{"time":"2026-09-07T00:03:45.642797414+05:30","level":"INFO","msg":"World Service gRPC server running on port %d","!BADKEY":50056}
