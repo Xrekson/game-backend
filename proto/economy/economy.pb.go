@@ -602,6 +602,8 @@ type PrestigeResponse struct {
 	Success               bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
 	NewPrestigeLevel      int32                  `protobuf:"varint,2,opt,name=new_prestige_level,json=newPrestigeLevel,proto3" json:"new_prestige_level,omitempty"`
 	NewPrestigeMultiplier float64                `protobuf:"fixed64,3,opt,name=new_prestige_multiplier,json=newPrestigeMultiplier,proto3" json:"new_prestige_multiplier,omitempty"`
+	NewBalance            float64                `protobuf:"fixed64,4,opt,name=new_balance,json=newBalance,proto3" json:"new_balance,omitempty"`
+	NewIncomePerSec       float64                `protobuf:"fixed64,5,opt,name=new_income_per_sec,json=newIncomePerSec,proto3" json:"new_income_per_sec,omitempty"`
 	unknownFields         protoimpl.UnknownFields
 	sizeCache             protoimpl.SizeCache
 }
@@ -653,6 +655,20 @@ func (x *PrestigeResponse) GetNewPrestigeLevel() int32 {
 func (x *PrestigeResponse) GetNewPrestigeMultiplier() float64 {
 	if x != nil {
 		return x.NewPrestigeMultiplier
+	}
+	return 0
+}
+
+func (x *PrestigeResponse) GetNewBalance() float64 {
+	if x != nil {
+		return x.NewBalance
+	}
+	return 0
+}
+
+func (x *PrestigeResponse) GetNewIncomePerSec() float64 {
+	if x != nil {
+		return x.NewIncomePerSec
 	}
 	return 0
 }
@@ -909,11 +925,14 @@ const file_proto_economy_economy_proto_rawDesc = "" +
 	"\x12new_income_per_sec\x18\x03 \x01(\x01R\x0fnewIncomePerSec\x12.\n" +
 	"\aupgrade\x18\x04 \x01(\v2\x14.economy.UpgradeItemR\aupgrade\".\n" +
 	"\x0fPrestigeRequest\x12\x1b\n" +
-	"\tplayer_id\x18\x01 \x01(\tR\bplayerId\"\x92\x01\n" +
+	"\tplayer_id\x18\x01 \x01(\tR\bplayerId\"\xe0\x01\n" +
 	"\x10PrestigeResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12,\n" +
 	"\x12new_prestige_level\x18\x02 \x01(\x05R\x10newPrestigeLevel\x126\n" +
-	"\x17new_prestige_multiplier\x18\x03 \x01(\x01R\x15newPrestigeMultiplier\"L\n" +
+	"\x17new_prestige_multiplier\x18\x03 \x01(\x01R\x15newPrestigeMultiplier\x12\x1f\n" +
+	"\vnew_balance\x18\x04 \x01(\x01R\n" +
+	"newBalance\x12+\n" +
+	"\x12new_income_per_sec\x18\x05 \x01(\x01R\x0fnewIncomePerSec\"L\n" +
 	"\x15DeductCurrencyRequest\x12\x1b\n" +
 	"\tplayer_id\x18\x01 \x01(\tR\bplayerId\x12\x16\n" +
 	"\x06amount\x18\x02 \x01(\x01R\x06amount\"S\n" +

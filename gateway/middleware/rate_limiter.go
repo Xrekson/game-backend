@@ -17,17 +17,17 @@ func RateLimiterMiddleware(redisClient *redis.Client, requestsPerMinute int) gin
 		}
 
 		clientIP := c.ClientIP()
-		key := fmt.Sprintf("ratelimit:%s:%d", clientIP, time.Now().Unix()/60)
-
+		key := fmt.Sprintf("ratelimit:%s:%d", clientIP, time.Now().Unix()/120)
+		fmt.Println("Rate limit key: ", key)
 		count, err := redisClient.Incr(c.Request.Context(), key).Result()
 		if err == nil {
 			if count == 1 {
-				redisClient.Expire(c.Request.Context(), key, 70*time.Second)
+				redisClient.Expire(c.Request.Context(), key, 130*time.Second)
 			}
 			if count > int64(requestsPerMinute) {
 				c.JSON(http.StatusTooManyRequests, gin.H{
 					"error":       "rate limit exceeded",
-					"retry_after": 60,
+					"retry_after": 120,
 				})
 				c.Abort()
 				return

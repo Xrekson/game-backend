@@ -1,2 +1,2 @@
-{"time":"2026-09-07T00:03:45.339663969+05:30","level":"INFO","msg":"Connected to PostgreSQL successfully at %s:%d","localhost":5432}
-{"time":"2026-09-07T00:03:45.340022143+05:30","level":"INFO","msg":"Auth Service gRPC server running on port %d","!BADKEY":50051}
+{"time":"2026-09-13T23:46:33.034622978+05:30","level":"INFO","msg":"Connected to PostgreSQL successfully at %s:%d","localhost":5432}
+{"time":"2026-09-13T23:46:33.035060422+05:30","level":"INFO","msg":"Auth Service gRPC server running on port %d","!BADKEY":50051}

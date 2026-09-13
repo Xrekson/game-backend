@@ -75,6 +75,8 @@ message PrestigeResponse {
   bool success = 1;
   int32 new_prestige_level = 2;
   double new_prestige_multiplier = 3;
+  double new_balance = 4;
+  double new_income_per_sec = 5;
 }
 
 message DeductCurrencyRequest {

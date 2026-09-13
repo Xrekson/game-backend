@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math"
+	"strings"
 	"time"
 
 	"github.com/xrekson/game-backend/pkg/errors"
@@ -18,7 +19,7 @@ type EconomyService interface {
 	ClaimIncome(ctx context.Context, playerID string) (*model.PlayerBalance, float64, error)
 	GetUpgrades(ctx context.Context, playerID string) ([]*model.UpgradeConfig, map[string]int32, error)
 	PurchaseUpgrade(ctx context.Context, playerID, upgradeID string) (*model.PlayerBalance, float64, *model.PlayerUpgrade, error)
-	Prestige(ctx context.Context, playerID string) (*model.PlayerBalance, error)
+	Prestige(ctx context.Context, playerID string) (*model.PlayerBalance, float64, error)
 	DeductCurrency(ctx context.Context, playerID string, amount float64) (float64, error)
 	AddCurrency(ctx context.Context, playerID string, amount float64) (float64, error)
 }
@@ -63,15 +64,18 @@ func (s *economyService) calculateIncomePerSec(ctx context.Context, playerID str
 		return 0, err
 	}
 
-	upgradeMap := make(map[string]int32)
-	for _, u := range upgrades {
-		upgradeMap[u.UpgradeID] = u.Level
-	}
-
 	income := b.BaseIncomePerSec
-	for _, cfg := range model.DefaultUpgrades {
-		if lvl, ok := upgradeMap[cfg.ID]; ok {
-			income += float64(lvl) * cfg.IncomeBonusPerSec
+	for _, u := range upgrades {
+		if u.Level <= 0 {
+			continue
+		}
+		baseID, rank := model.ParseUpgradeIDAndRank(u.UpgradeID)
+		for _, cfg := range model.DefaultUpgrades {
+			if cfg.ID == baseID {
+				rankCfg := model.GetConfigForRank(cfg, rank)
+				income += float64(u.Level) * rankCfg.IncomeBonusPerSec
+				break
+			}
 		}
 	}
 
@@ -131,6 +135,11 @@ func (s *economyService) ClaimIncome(ctx context.Context, playerID string) (*mod
 }
 
 func (s *economyService) GetUpgrades(ctx context.Context, playerID string) ([]*model.UpgradeConfig, map[string]int32, error) {
+	b, err := s.getOrInitBalance(ctx, playerID)
+	if err != nil {
+		return nil, nil, errors.Internal("failed to fetch balance for upgrades", err)
+	}
+
 	upgrades, err := s.repo.GetUpgrades(ctx, playerID)
 	if err != nil {
 		return nil, nil, errors.Internal("failed to fetch player upgrades", err)
@@ -141,12 +150,38 @@ func (s *economyService) GetUpgrades(ctx context.Context, playerID string) ([]*m
 		levelMap[u.UpgradeID] = u.Level
 	}
 
-	configs := make([]*model.UpgradeConfig, len(model.DefaultUpgrades))
-	for i, cfg := range model.DefaultUpgrades {
-		lvl := levelMap[cfg.ID]
-		c := cfg
-		c.BaseCost = cfg.BaseCost * math.Pow(1.15, float64(lvl))
-		configs[i] = &c
+	currentRank := b.PrestigeLevel
+	var configs []*model.UpgradeConfig
+
+	// 1. Active shop upgrades for the current prestige rank
+	for _, baseCfg := range model.DefaultUpgrades {
+		rankCfg := model.GetConfigForRank(baseCfg, currentRank)
+		lvl := levelMap[rankCfg.ID]
+		c := rankCfg
+		c.BaseCost = rankCfg.BaseCost * math.Pow(1.15, float64(lvl))
+		configs = append(configs, &c)
+	}
+
+	// 2. Historical upgrades from previous ranks that have level > 0
+	activeMap := make(map[string]bool)
+	for _, c := range configs {
+		activeMap[c.ID] = true
+	}
+
+	for upgradeID, lvl := range levelMap {
+		if lvl <= 0 || activeMap[upgradeID] {
+			continue
+		}
+		baseID, rank := model.ParseUpgradeIDAndRank(upgradeID)
+		for _, baseCfg := range model.DefaultUpgrades {
+			if baseCfg.ID == baseID {
+				rankCfg := model.GetConfigForRank(baseCfg, rank)
+				c := rankCfg
+				c.BaseCost = rankCfg.BaseCost * math.Pow(1.15, float64(lvl))
+				configs = append(configs, &c)
+				break
+			}
+		}
 	}
 
 	return configs, levelMap, nil
@@ -158,23 +193,33 @@ func (s *economyService) PurchaseUpgrade(ctx context.Context, playerID, upgradeI
 		return nil, 0, nil, err
 	}
 
+	targetUpgradeID := upgradeID
+	baseID, rank := model.ParseUpgradeIDAndRank(upgradeID)
+
 	var targetConfig *model.UpgradeConfig
 	for _, cfg := range model.DefaultUpgrades {
-		if cfg.ID == upgradeID {
-			targetConfig = &cfg
+		if cfg.ID == baseID {
+			resolvedRank := rank
+			if !strings.Contains(upgradeID, "_r") {
+				resolvedRank = b.PrestigeLevel
+				targetUpgradeID = fmt.Sprintf("%s_r%d", baseID, resolvedRank)
+			}
+			rankCfg := model.GetConfigForRank(cfg, resolvedRank)
+			targetConfig = &rankCfg
 			break
 		}
 	}
+
 	if targetConfig == nil {
 		return nil, 0, nil, errors.NotFound("upgrade not found", nil)
 	}
 
-	u, err := s.repo.GetUpgrade(ctx, playerID, upgradeID)
+	u, err := s.repo.GetUpgrade(ctx, playerID, targetUpgradeID)
 	if err != nil {
 		return nil, 0, nil, errors.Internal("failed fetching upgrade level", err)
 	}
 	if u == nil {
-		u = &model.PlayerUpgrade{PlayerID: playerID, UpgradeID: upgradeID, Level: 0}
+		u = &model.PlayerUpgrade{PlayerID: playerID, UpgradeID: targetUpgradeID, Level: 0}
 	}
 
 	cost := targetConfig.BaseCost * math.Pow(1.15, float64(u.Level))
@@ -201,7 +246,7 @@ func (s *economyService) PurchaseUpgrade(ctx context.Context, playerID, upgradeI
 	if s.producer != nil {
 		_ = s.producer.Publish(ctx, events.TopicEconomyUpgrades, playerID, events.UpgradePurchasedEvent{
 			PlayerID:     playerID,
-			UpgradeID:    upgradeID,
+			UpgradeID:    targetUpgradeID,
 			Cost:         cost,
 			NewLevel:     int(u.Level),
 			IncomePerSec: newIncomePerSec,
@@ -212,27 +257,36 @@ func (s *economyService) PurchaseUpgrade(ctx context.Context, playerID, upgradeI
 	return b, newIncomePerSec, u, nil
 }
 
-func (s *economyService) Prestige(ctx context.Context, playerID string) (*model.PlayerBalance, error) {
+func (s *economyService) Prestige(ctx context.Context, playerID string) (*model.PlayerBalance, float64, error) {
 	b, _, err := s.GetBalance(ctx, playerID)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
-	const prestigeThreshold = 100000.0
-	if b.Balance < prestigeThreshold {
-		return nil, errors.BadRequest(fmt.Sprintf("prestige requires at least %.0f balance", prestigeThreshold), nil)
+	incomePerSec, err := s.calculateIncomePerSec(ctx, playerID, b)
+	if err != nil {
+		return nil, 0, errors.Internal("failed calculating income for prestige", err)
+	}
+
+	// Target income rate required for current rank: 5000 * (1.5 ^ PrestigeLevel)
+	targetIncomeRate := 5000.0 * math.Pow(1.5, float64(b.PrestigeLevel))
+	if incomePerSec < targetIncomeRate {
+		return nil, 0, errors.BadRequest(fmt.Sprintf("prestige rank up requires at least %.0f Gold/sec income rate (current: %.1f Gold/sec)", targetIncomeRate, incomePerSec), nil)
 	}
 
 	b.PrestigeLevel++
-	b.PrestigeMultiplier *= 1.5
+	// Multiplier formula: 1.0 + 0.5 * PrestigeLevel (Rank 0 = 1.0, Rank 1 = 1.5, Rank 2 = 2.0...)
+	b.PrestigeMultiplier = 1.0 + 0.5*float64(b.PrestigeLevel)
 	b.Balance = 10.0
 	b.LastClaimTime = time.Now()
 
 	if err := s.repo.UpdateBalance(ctx, b); err != nil {
-		return nil, errors.Internal("failed updating prestige balance", err)
+		return nil, 0, errors.Internal("failed updating prestige balance", err)
 	}
 
-	return b, nil
+	newIncomePerSec, _ := s.calculateIncomePerSec(ctx, playerID, b)
+
+	return b, newIncomePerSec, nil
 }
 
 func (s *economyService) DeductCurrency(ctx context.Context, playerID string, amount float64) (float64, error) {

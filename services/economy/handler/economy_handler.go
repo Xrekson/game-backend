@@ -85,7 +85,7 @@ func (h *EconomyHandler) PurchaseUpgrade(ctx context.Context, req *economypb.Pur
 }
 
 func (h *EconomyHandler) Prestige(ctx context.Context, req *economypb.PrestigeRequest) (*economypb.PrestigeResponse, error) {
-	b, err := h.service.Prestige(ctx, req.PlayerId)
+	b, incomePerSec, err := h.service.Prestige(ctx, req.PlayerId)
 	if err != nil {
 		return nil, err
 	}
@@ -94,6 +94,8 @@ func (h *EconomyHandler) Prestige(ctx context.Context, req *economypb.PrestigeRe
 		Success:               true,
 		NewPrestigeLevel:      b.PrestigeLevel,
 		NewPrestigeMultiplier: b.PrestigeMultiplier,
+		NewBalance:            b.Balance,
+		NewIncomePerSec:       incomePerSec,
 	}, nil
 }
 
