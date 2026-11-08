@@ -81,7 +81,11 @@ func main() {
 		World:     worldClient,
 	}
 
-	r := router.SetupRouter(jwtMgr, redisClient, clients)
+	rateLimitRPM := cfg.Services.RateLimitRPM
+	if rateLimitRPM == 0 {
+		rateLimitRPM = 120
+	}
+	r := router.SetupRouter(jwtMgr, redisClient, clients, rateLimitRPM)
 
 	port := cfg.Services.GatewayPort
 	logger.Info("API Gateway running on port %d", port)

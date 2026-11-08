@@ -27,11 +27,13 @@ type Clients struct {
 	World     worldpb.WorldServiceClient
 }
 
-func SetupRouter(jwtMgr *auth.JWTManager, redisClient *redis.Client, clients Clients) *gin.Engine {
+func SetupRouter(jwtMgr *auth.JWTManager, redisClient *redis.Client, clients Clients, rateLimitRPM int) *gin.Engine {
 	r := gin.New()
 	r.Use(gin.Recovery())
 	r.Use(middleware.CORSMiddleware())
-	r.Use(middleware.RateLimiterMiddleware(redisClient, 120))
+	if rateLimitRPM > 0 {
+		r.Use(middleware.RateLimiterMiddleware(redisClient, rateLimitRPM))
+	}
 
 	// Health check
 	r.GET("/health", func(c *gin.Context) {

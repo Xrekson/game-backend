@@ -29,6 +29,7 @@ type ServicesConfig struct {
 	WorldGRPCPort     int `yaml:"world_grpc_port"`
 	WorldWSPort       int `yaml:"world_ws_port"`
 	NPCGRPCPort       int `yaml:"npc_grpc_port"`
+	RateLimitRPM      int `yaml:"rate_limit_rpm"`
 }
 
 type PostgresConfig struct {
@@ -123,6 +124,11 @@ func overrideFromEnv(cfg *Config) {
 	if keyspace := os.Getenv("CASSANDRA_KEYSPACE"); keyspace != "" {
 		cfg.Cassandra.Keyspace = keyspace
 	}
+	if rpm := os.Getenv("RATE_LIMIT_RPM"); rpm != "" {
+		if r, err := strconv.Atoi(rpm); err == nil {
+			cfg.Services.RateLimitRPM = r
+		}
+	}
 	if host := os.Getenv("REDIS_HOST"); host != "" {
 		cfg.Redis.Host = host
 	}
@@ -130,6 +136,9 @@ func overrideFromEnv(cfg *Config) {
 		if p, err := strconv.Atoi(port); err == nil {
 			cfg.Redis.Port = p
 		}
+	}
+	if pass, exists := os.LookupEnv("REDIS_PASSWORD"); exists {
+		cfg.Redis.Password = pass
 	}
 	if brokers := os.Getenv("KAFKA_BROKERS"); brokers != "" {
 		cfg.Kafka.Brokers = strings.Split(brokers, ",")

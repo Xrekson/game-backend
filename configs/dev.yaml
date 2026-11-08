@@ -10,6 +10,7 @@ services:
   world_grpc_port: 50056
   world_ws_port: 8081
   npc_grpc_port: 50057
+  rate_limit_rpm: 120
 
 postgres:
   host: localhost

@@ -11,14 +11,13 @@ import (
 
 func RateLimiterMiddleware(redisClient *redis.Client, requestsPerMinute int) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if redisClient == nil {
+		if redisClient == nil || requestsPerMinute <= 0 {
 			c.Next()
 			return
 		}
 
 		clientIP := c.ClientIP()
 		key := fmt.Sprintf("ratelimit:%s:%d", clientIP, time.Now().Unix()/120)
-		fmt.Println("Rate limit key: ", key)
 		count, err := redisClient.Incr(c.Request.Context(), key).Result()
 		if err == nil {
 			if count == 1 {

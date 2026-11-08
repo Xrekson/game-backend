@@ -7,6 +7,7 @@
 #   ./dev.sh stop    - Cleanly stops all microservices & frontend dev server
 #   ./dev.sh status  - Displays running status and ports of all services
 #   ./dev.sh restart - Restarts all microservices and frontend server
+#   ./dev.sh benchmark - Runs the stress-test suite on the running backend
 # ==============================================================================
 
 set -e
@@ -170,8 +171,12 @@ case "$1" in
     status)
         status_services
         ;;
+    benchmark)
+        shift
+        "$SCRIPT_DIR/scripts/run-stress-test.sh" "$@"
+        ;;
     *)
-        echo -e "Usage: $0 {start|stop|restart|status}"
+        echo -e "Usage: $0 {start|stop|restart|status|benchmark}"
         exit 1
         ;;
 esac
