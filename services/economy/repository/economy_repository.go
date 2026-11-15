@@ -47,7 +47,8 @@ func (r *postgresEconomyRepository) GetBalance(ctx context.Context, playerID str
 
 func (r *postgresEconomyRepository) CreateBalance(ctx context.Context, b *model.PlayerBalance) error {
 	query := `INSERT INTO player_balances (player_id, balance, base_income_per_sec, prestige_level, prestige_multiplier, last_claim_time, updated_at)
-			  VALUES ($1, $2, $3, $4, $5, $6, $7)`
+			  VALUES ($1, $2, $3, $4, $5, $6, $7)
+			  ON CONFLICT (player_id) DO NOTHING`
 	_, err := r.db.ExecContext(ctx, query, b.PlayerID, b.Balance, b.BaseIncomePerSec, b.PrestigeLevel, b.PrestigeMultiplier, b.LastClaimTime, time.Now())
 	return err
 }
