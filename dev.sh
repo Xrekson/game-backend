@@ -9,6 +9,7 @@
 #   ./dev.sh restart - Restarts all microservices and frontend server
 #   ./dev.sh start-constrained - Starts services strictly capped at 2 CPU Cores & 4GB RAM
 #   ./dev.sh benchmark - Runs the stress-test suite on the running backend
+#   ./dev.sh k6 - Runs the Grafana k6 load-testing suite (SLO: p95<0.75s, p99<2.0s)
 # ==============================================================================
 
 set -e
@@ -185,8 +186,12 @@ case "$1" in
         shift
         "$SCRIPT_DIR/scripts/run-stress-test.sh" "$@"
         ;;
+    k6)
+        shift
+        "$SCRIPT_DIR/scripts/run-k6.sh" "$@"
+        ;;
     *)
-        echo -e "Usage: $0 {start|start-constrained|stop|restart|status|benchmark}"
+        echo -e "Usage: $0 {start|start-constrained|stop|restart|status|benchmark|k6}"
         exit 1
         ;;
 esac
