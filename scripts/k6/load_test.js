@@ -14,8 +14,10 @@ import { Counter, Rate, Trend } from 'k6/metrics';
 
 const GATEWAY_URL = __ENV.GATEWAY_URL || 'http://localhost:8080';
 const WS_URL = __ENV.WS_URL || 'ws://localhost:8081/ws';
-const P95_TARGET = __ENV.P95_MS || 750;
-const P99_TARGET = __ENV.P99_MS || 2000;
+const P95_TARGET = parseInt(__ENV.P95_MS || '750', 10);
+const P99_TARGET = parseInt(__ENV.P99_MS || '2000', 10);
+const TARGET_VUS = parseInt(__ENV.VUS || '50', 10);
+const TEST_DURATION = __ENV.DURATION || '30s';
 
 // Custom metrics
 const wsMessageSuccess = new Counter('ws_messages_sent');
@@ -30,10 +32,9 @@ export const options = {
             executor: 'ramping-vus',
             startVUs: 0,
             stages: [
-                { duration: '10s', target: 20 },  // Ramp-up to 20 users
-                { duration: '30s', target: 50 },  // Peak load: 50 concurrent users
-                { duration: '10s', target: 75 },  // Stress spike to 75 users
-                { duration: '10s', target: 0 },   // Graceful ramp-down
+                { duration: '5s', target: Math.max(1, Math.ceil(TARGET_VUS * 0.4)) }, // Ramp up
+                { duration: TEST_DURATION, target: TARGET_VUS },                      // Peak target load
+                { duration: '5s', target: 0 },                                        // Graceful ramp-down
             ],
             gracefulRampDown: '5s',
         },
@@ -238,6 +239,8 @@ export function handleSummary(data) {
 
     const report = `# 📊 Grafana k6 Stress Test Report
 **Hardware Profile:** 2 vCPU, 4GB RAM (Linux cgroups v2 constraint)  
+**Concurrent Users (VUs):** ${TARGET_VUS} users  
+**Test Duration:** ${TEST_DURATION}  
 **Executed At:** ${new Date().toISOString()}  
 **Target SLOs:** p(95) < ${P95_TARGET}ms | p(99) < ${P99_TARGET}ms  
 
@@ -247,6 +250,7 @@ export function handleSummary(data) {
 
 | Metric | Target SLO | Actual Result | Status |
 |---|---|---|---|
+| **Concurrent Users** | User Target | **${TARGET_VUS} VUs** | 👥 Active Load |
 | **Latency p(95)** | **< ${P95_TARGET} ms** | **${p95.toFixed(1)} ms** | ${p95Pass} |
 | **Latency p(99)** | **< ${P99_TARGET} ms** | **${p99.toFixed(1)} ms** | ${p99Pass} |
 | **Total Throughput** | Best Effort | **${rps.toFixed(1)} req/s** | ⚡ High Throughput |

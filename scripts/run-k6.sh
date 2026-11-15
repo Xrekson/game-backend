@@ -5,9 +5,11 @@
 # SLO: p95 < 0.75s (750ms), p99 < 2.0s (2000ms)
 #
 # Usage:
-#   ./scripts/run-k6.sh            # Standard ramping load test (up to 75 VUs, ~1m)
-#   ./scripts/run-k6.sh quick      # Quick 20s test (20 VUs)
-#   ./scripts/run-k6.sh smoke      # 5s smoke test (1 VU)
+#   ./scripts/run-k6.sh                # Prompts for amount of users & duration
+#   ./scripts/run-k6.sh 50             # 50 users, default 30s
+#   ./scripts/run-k6.sh 100 45s        # 100 users for 45 seconds
+#   ./scripts/run-k6.sh quick          # Quick preset (20 users, 20s)
+#   ./scripts/run-k6.sh smoke          # Smoke check (1 user, 5s)
 # ==============================================================================
 
 set -e
@@ -35,21 +37,43 @@ if ! curl -s -f http://localhost:8080/health >/dev/null 2>&1; then
 fi
 echo -e "\033[0;32m  ✓ API Gateway is online.\033[0m"
 
-echo -e "\033[0;36m[2/2] Launching Grafana k6 Load Test...\033[0m"
-echo -e "\033[0;34m  • SLO Thresholds: p(95) < 750ms (0.75s) | p(99) < 2000ms (2.0s)\033[0m"
+VUS=""
+DURATION=""
 
-MODE="$1"
-
-if [ "$MODE" = "smoke" ]; then
-    echo -e "\033[0;35m  • Running Smoke Test (1 VU, 5s)...\033[0m"
-    k6 run --vus 1 --duration 5s "$SCRIPT_DIR/k6/load_test.js"
-elif [ "$MODE" = "quick" ]; then
-    echo -e "\033[0;35m  • Running Quick Benchmark (20 VUs, 20s)...\033[0m"
-    k6 run --vus 20 --duration 20s "$SCRIPT_DIR/k6/load_test.js"
-else
-    # Standard full load test with ramping stages
+# Determine user input
+if [ "$1" = "smoke" ]; then
+    VUS=1
+    DURATION="5s"
+elif [ "$1" = "quick" ]; then
+    VUS=20
+    DURATION="20s"
+elif [[ "$1" =~ ^[0-9]+$ ]]; then
+    VUS="$1"
+    DURATION="${2:-30s}"
+elif [ -n "$1" ]; then
+    # Custom k6 flags passed directly
     k6 run "$SCRIPT_DIR/k6/load_test.js" "$@"
+    exit 0
+else
+    # Interactive prompt for user input
+    echo -e "\n\033[1;33m⚙️  Load Test Parameters:\033[0m"
+    if [ -t 0 ]; then
+        read -p "  Enter amount of concurrent users (VUs) [default: 50]: " INPUT_VUS
+        VUS="${INPUT_VUS:-50}"
+        read -p "  Enter test duration (e.g. 20s, 30s, 1m) [default: 30s]: " INPUT_DUR
+        DURATION="${INPUT_DUR:-30s}"
+    else
+        VUS=50
+        DURATION="30s"
+    fi
 fi
+
+echo -e "\n\033[0;36m[2/2] Launching Grafana k6 Load Test...\033[0m"
+echo -e "  • Concurrent Users (VUs): \033[1;32m$VUS\033[0m"
+echo -e "  • Test Duration:          \033[1;32m$DURATION\033[0m"
+echo -e "  • Target SLOs:            \033[0;34mp(95) < 750ms | p(99) < 2000ms\033[0m\n"
+
+VUS="$VUS" DURATION="$DURATION" k6 run "$SCRIPT_DIR/k6/load_test.js"
 
 if [ -f "logs/k6-report.md" ]; then
     echo -e "\n\033[0;32m================================================================================\033[0m"
