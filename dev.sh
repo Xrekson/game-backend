@@ -7,6 +7,7 @@
 #   ./dev.sh stop    - Cleanly stops all microservices & frontend dev server
 #   ./dev.sh status  - Displays running status and ports of all services
 #   ./dev.sh restart - Restarts all microservices and frontend server
+#   ./dev.sh start-constrained - Starts services strictly capped at 2 CPU Cores & 4GB RAM
 #   ./dev.sh benchmark - Runs the stress-test suite on the running backend
 # ==============================================================================
 
@@ -160,6 +161,15 @@ case "$1" in
     start)
         start_services
         ;;
+    start-constrained)
+        echo -e "${CYAN}Launching services strictly capped to 2 CPU Cores & 4GB RAM via cgroups v2...${NC}"
+        systemd-run --user --scope \
+            -p MemoryMax=4G \
+            -p MemoryHigh=3.8G \
+            -p CPUQuota=200% \
+            -p AllowedCPUs=0,1 \
+            "$0" start
+        ;;
     stop)
         stop_services
         ;;
@@ -176,7 +186,7 @@ case "$1" in
         "$SCRIPT_DIR/scripts/run-stress-test.sh" "$@"
         ;;
     *)
-        echo -e "Usage: $0 {start|stop|restart|status|benchmark}"
+        echo -e "Usage: $0 {start|start-constrained|stop|restart|status|benchmark}"
         exit 1
         ;;
 esac
