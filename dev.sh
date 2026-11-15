@@ -87,8 +87,9 @@ function start_services() {
     for item in "${SERVICES[@]}"; do
         IFS=":" read -r name port path <<< "$item"
         logfile="$LOG_DIR/$name.log"
-        ./bin/$name > "$logfile" 2>&1 &
+        nohup ./bin/$name > "$logfile" 2>&1 &
         pid=$!
+        disown $pid 2>/dev/null || true
         echo "$pid:$name" >> "$PID_FILE"
         echo -e "  ${GREEN}✓${NC} Started ${PURPLE}$name${NC} (PID: ${YELLOW}$pid${NC}) -> Log: ${BLUE}logs/$name.log${NC}"
     done
@@ -98,8 +99,9 @@ function start_services() {
         echo -e "${CYAN}[4/4] Starting Frontend Dev Server (Angular + Phaser)...${NC}"
         cd "$FRONTEND_DIR"
         logfile="$LOG_DIR/frontend.log"
-        npm run dev > "$logfile" 2>&1 &
+        nohup npm run dev > "$logfile" 2>&1 &
         fpid=$!
+        disown $fpid 2>/dev/null || true
         echo "$fpid:frontend" >> "$PID_FILE"
         echo -e "  ${GREEN}✓${NC} Started ${PURPLE}frontend${NC} (PID: ${YELLOW}$fpid${NC}) -> http://localhost:4200"
     else
