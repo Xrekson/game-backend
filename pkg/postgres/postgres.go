@@ -22,8 +22,8 @@ func NewPostgresDB(cfg config.PostgresConfig) (*DB, error) {
 		return nil, fmt.Errorf("unable to connect to database: %w", err)
 	}
 
-	db.SetMaxOpenConns(25)
-	db.SetMaxIdleConns(5)
+	db.SetMaxOpenConns(100)
+	db.SetMaxIdleConns(30)
 	db.SetConnMaxLifetime(5 * time.Minute)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

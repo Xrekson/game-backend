@@ -1,5 +1,7 @@
 import http from 'k6/http';
 import ws from 'k6/ws';
+import crypto from 'k6/crypto';
+import encoding from 'k6/encoding';
 import { check, sleep, group } from 'k6';
 import { Counter, Rate, Trend } from 'k6/metrics';
 
@@ -49,7 +51,34 @@ const wsMovementTrend = new Trend('endpoint_ws_movement', true);
 const wsMessageSuccess = new Counter('ws_messages_sent');
 const wsConnectionSuccess = new Rate('ws_connect_success');
 
+// Cache generated VU tokens per VU to eliminate row-level lock contention on player_balances
+const vuTokens = {};
+
+function getVUSession(vuId, fallbackData) {
+    if (!vuId || vuId < 1) return { token: fallbackData.token, playerId: fallbackData.playerId };
+    if (vuTokens[vuId]) return vuTokens[vuId];
+
+    const userId = `00000000-0000-0000-0000-${String(vuId).padStart(12, '0')}`;
+    const username = `k6_player_${vuId}`;
+    const secret = __ENV.JWT_SECRET || 'dev-super-secret-key-change-in-prod-12345';
+
+    const header = encoding.b64encode(JSON.stringify({ alg: "HS256", typ: "JWT" }), 'rawurl');
+    const payload = encoding.b64encode(JSON.stringify({
+        user_id: userId,
+        username: username,
+        role: "player",
+        sub: userId,
+        exp: Math.floor(Date.now() / 1000) + 86400,
+        iat: Math.floor(Date.now() / 1000)
+    }), 'rawurl');
+    const signature = crypto.hmac('sha256', secret, `${header}.${payload}`, 'base64rawurl');
+    const session = { token: `${header}.${payload}.${signature}`, playerId: userId, username };
+    vuTokens[vuId] = session;
+    return session;
+}
+
 export const options = {
+    summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(90)', 'p(95)', 'p(99)'],
     scenarios: {
         api_stress: {
             executor: 'ramping-vus',
@@ -120,9 +149,10 @@ export function setup() {
 
 // VU Execution Loop
 export default function (data) {
+    const session = getVUSession(__VU, data);
     const authHeaders = {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${data.token}`,
+        'Authorization': `Bearer ${session.token}`,
     };
 
     // 1. Gateway Health Baseline

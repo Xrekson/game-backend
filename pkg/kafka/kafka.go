@@ -32,6 +32,7 @@ func (p *Producer) getWriter(topic string) *kafka.Writer {
 		Topic:        topic,
 		Balancer:     &kafka.LeastBytes{},
 		BatchTimeout: 10 * time.Millisecond,
+		Async:        true,
 	}
 	p.writers[topic] = w
 	return w
